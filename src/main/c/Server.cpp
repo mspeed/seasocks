@@ -114,14 +114,18 @@ namespace seasocks {
 pid_t gettid() {
 
 #ifdef _WIN32
-    return ::GetCurrentThreadId();
+	return ::GetCurrentThreadId();
 #else
-#if __GLIBC_PREREQ(2, 30)
-    return ::gettid();
+#if defined(__GLIBC__) && defined(__GLIBC_PREREQ)
+#if __GLIB_PREREQ(2,30)
+	return ::gettid();
 #else
-    return static_cast<pid_t>(syscall(SYS_gettid));
+	return static_cast<pid_t>(syscall(SYS_gettid));
 #endif /* GLIBC 2.30 */
-#endif
+#else
+	return static_cast<pid_t>(syscall(SYS_gettid));
+#endif /* GLIBC */
+#endif /* WIN32 */
 }
 
 #ifdef _WIN32
